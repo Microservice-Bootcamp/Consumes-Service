@@ -3,7 +3,7 @@ spring:
     name: consumes
   data:
     mongodb:
-      uri: mongodb+srv://admin:microservice@cluster0.nxqed.mongodb.net/account-microservice?retryWrites=true&w=majority
+      uri: mongodb+srv://admin:admin@cluster0.qgkq3.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
   cloud:
     config:
       enabled: true
