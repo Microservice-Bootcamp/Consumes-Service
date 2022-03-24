@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: consumes
+  data:
+    mongodb:
+      uri: mongodb+srv://admin:microservice@cluster0.nxqed.mongodb.net/account-microservice?retryWrites=true&w=majority
+  cloud:
+    config:
+      enabled: true
+      uri: http://localhost:8090
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              ReactiveMongoTemplate: DEBUG
+    root: info
+  pattern:
+    console: '%d{dd-MM-yyyy HH:mm:ss.SSS} %magenta([%thread]) %highlight(%-5level)
+            %logger.%M - %msg%n'
