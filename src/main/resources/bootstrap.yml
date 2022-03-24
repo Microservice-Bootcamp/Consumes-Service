@@ -9,6 +9,11 @@ spring:
       enabled: true
       uri: http://localhost:8090
 
+base:
+  url:
+    personalaccount: lb://personal-account
+    businessaccount: lb://businessAccount-service
+
 logging:
   level:
     org:
