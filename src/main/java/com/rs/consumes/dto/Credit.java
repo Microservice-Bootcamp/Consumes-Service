@@ -10,10 +10,13 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Credit {
+
+    private String idCredit;
     private Integer dniUser;
     private Integer accountNumber;
     private Integer balance;
     private Integer creditLimit;
     private Integer debt;
     private String typeCredit;
+    //private Boolean penalty;
 }

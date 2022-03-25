@@ -5,6 +5,7 @@ import com.rs.consumes.entity.Charge;
 import com.rs.consumes.repository.ChargeRepository;
 import com.rs.consumes.util.WebClientTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ChargeService {
+    private LocalDate date = LocalDate.now();
 
     @Autowired
     private ChargeRepository chargeRepository;
@@ -22,7 +24,7 @@ public class ChargeService {
     @Autowired
     private WebClientTemplate webClientTemplate;
 
-    public Mono<Charge> chargeBDebt(Charge charge){
+    /*public Mono<Charge> chargeBDebt(Charge charge){
         var creditLimit =  getCredit(charge.getAccountNumber())
                 .switchIfEmpty(Mono.empty())
                 .flatMap(credit ->Mono.just(credit.getCreditLimit()));
@@ -41,7 +43,20 @@ public class ChargeService {
                     });
                 });
 
+    }*/
+    public Mono<Charge> chargeBDebt(Charge charge){
+        return getCredit(charge.getAccountNumber())
+                .switchIfEmpty(Mono.empty())
+                .flatMap(credit ->{
+                    if((credit.getCreditLimit()-credit.getDebt())>= charge.getAmount()){
+                        credit.setDebt((int) (credit.getDebt()+ charge.getAmount()));
+                        return updateChargeInCredit(credit)
+                                .then(chargeRepository.save(charge));
+                    }
+                    return Mono.empty();
+                });
     }
+
 
     private Mono<Credit> getCredit(Integer accountNumber){
         return webClientTemplate.templateWebClient("http://localhost:8093")
@@ -50,6 +65,17 @@ public class ChargeService {
                 .retrieve()
                 .bodyToMono(Credit.class);
     }
+    private Mono<Credit> updateChargeInCredit(Credit credit){
+        return webClientTemplate.templateWebClient("http://localhost:8093")
+                .put()
+                .uri("/credit/update")
+                .body( Mono.just(credit), Credit.class)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(Credit.class);
+    }
+
+
 
     private Flux<Charge> chargeByAccount(Integer accountNumber){
         return chargeRepository.findAllByAccountNumberAndIsActive(accountNumber, true);
