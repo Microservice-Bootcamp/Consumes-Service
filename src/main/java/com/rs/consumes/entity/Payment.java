@@ -1,29 +1,31 @@
 package com.rs.consumes.entity;
 
 import com.rs.consumes.type.ClientType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Setter
-@Document
+@AllArgsConstructor
+@NoArgsConstructor
+@Document(collection = "payment-card")
 public class Payment {
-
     @Id
     private String id;
 
     private String creditCardNumber;
+    private Double amount;
+    private String concept;
 
-    private BigDecimal amount;
+    @Builder.Default
+    private String chargeNumber = java.util.UUID.randomUUID().toString();
 
-    private String chargeNumber;
-
-    private LocalDateTime transactionDate;
-
-    private ClientType clientType;
+    @Builder.Default
+    private LocalDate transactionDate = LocalDate.now();
 }
